@@ -1,25 +1,72 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useLocalStore, useObserver } from "mobx-react";
+
+const StoreContext = React.createContext();
+
+const StoreProvider = ({ children }) => {
+  const store = useLocalStore(() => ({
+    bugs: ["Centipede"],
+
+    addBug: (bug) => {
+      store.bugs.push(bug);
+    },
+
+    get bugsCount() {
+      return store.bugs.length;
+    },
+  }));
+
+  return (
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+  );
+};
+
+const BugHeader = () => {
+	const store = React.useContext(StoreContext);
+	return useObserver(() => (
+		<h2>{store.bugsCount} Bugs!</h2>
+	))
+}
+
+const BugList = () => {
+  const store = React.useContext(StoreContext);
+  return useObserver(() => (
+    <ul>
+      {store.bugs.map((bug) => (
+        <li>{bug}</li>
+      ))}
+    </ul>
+  ));
+};
+
+const BugForm = () => {
+  const store = React.useContext(StoreContext);
+  const [bug, setBug] = React.useState("");
+  return (
+    <form
+      onSubmit={(e) => {
+        store.addBug(bug);
+        setBug("");
+        e.preventDefault();
+      }}
+    >
+      <input type="text" value={bug} onChange={(e) => setBug(e.target.value)} />
+      <button type="submit">Add</button>
+    </form>
+  );
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <StoreProvider>
+      	<main style={{ display: "flex", justifyContent: "center" }}>
+        	<div>
+				<BugHeader/>
+				<BugList />
+				<BugForm />
+        	</div>
+      	</main>
+    </StoreProvider>
   );
 }
 
