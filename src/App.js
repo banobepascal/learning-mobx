@@ -8,7 +8,7 @@ const StoreProvider = ({ children }) => {
     bugs: ["Centipede"],
 
     addBug: (bug) => {
-      store.bugs.push(bug)
+      store.bugs.push(bug);
     },
 
     get bugsCount() {
