@@ -12,7 +12,7 @@ const StoreProvider = ({ children }) => {
     },
 
     get bugsCount() {
-      return store.bugs.length
+      return store.bugs.length;
     },
   }));
 
